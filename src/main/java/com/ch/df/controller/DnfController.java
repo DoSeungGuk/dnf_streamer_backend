@@ -1,15 +1,13 @@
 package com.ch.df.controller;
 
 import com.ch.df.dao.CharacterDAO;
-import com.ch.df.entity.GameCharacter;
+import com.ch.df.entity.CharacterRankingResponse;
 import com.ch.df.service.DnfService;
-import com.ch.df.service.StreamerRankingService;
 import com.ch.df.service.TimelineService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,14 +24,12 @@ public class DnfController {
     private final DnfService dnfService;
     private final WebClient webClient; // WebClient 필드 선언
     private final TimelineService timelineService;
-    private final StreamerRankingService rankingService;
     private final CharacterDAO characterDAO;
 
-    public DnfController(DnfService dnfService, WebClient webClient, TimelineService timelineService, StreamerRankingService rankingService, CharacterDAO characterDAO) {
+    public DnfController(DnfService dnfService, WebClient webClient, TimelineService timelineService, CharacterDAO characterDAO) {
         this.dnfService = dnfService;
         this.webClient = webClient;
         this.timelineService = timelineService;
-        this.rankingService = rankingService;
         this.characterDAO = characterDAO;
     }
 
@@ -54,15 +50,21 @@ public class DnfController {
         return timelineService.fetchTimeline(serverId, characterId, start, end, lastCheckedDate);
     }
 
-    /**
-     * 스트리머별 태초 아이템 순위를 조회
-     */
-    @GetMapping("/rankings/streamers")
-    public Mono<Map<String, Integer>> getStreamerRankings(
-            @RequestParam List<String> streamerIds
-    ) {
-        LocalDateTime lastCheckedDate = LocalDateTime.now().minusDays(90); // 최근 90일 기준
-        return rankingService.calculateStreamerRanking(streamerIds, lastCheckedDate);
+    @GetMapping("/rankings/fame")
+    public ResponseEntity<List<CharacterRankingResponse>> getFameRankings() {
+        List<CharacterRankingResponse> rankings = characterDAO.findCharacterRankings();
+        return ResponseEntity.ok(rankings);
+    }
+
+    @GetMapping("/rankings/taecho")
+    public ResponseEntity<List<CharacterRankingResponse>> getTaechoRankings() {
+        List<CharacterRankingResponse> rankings = characterDAO.findTopTaechoCharacters();
+        return ResponseEntity.ok(rankings);
+    }
+    @GetMapping("/rankings/streamers/taecho")
+    public ResponseEntity<List<Map<String, Object>>> getStreamerTaechoRankings() {
+        List<Map<String, Object>> rankings = characterDAO.findStreamerTaechoRankings();
+        return ResponseEntity.ok(rankings);
     }
 
     @Value("${api.key:NOT_SET}")
@@ -97,26 +99,7 @@ public class DnfController {
                 .uri(url)
                 .retrieve()
                 .bodyToMono(String.class);
-
     }
-
-    @GetMapping("/characters/taecho")
-    public ResponseEntity<Map<String, Object>> getCharacterTaechoData(
-            @RequestParam String characterId,
-            @RequestParam String serverId
-    ) {
-        GameCharacter character = characterDAO.findCharacterByIdAndServer(characterId, serverId);
-        if (character == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Character not found"));
-        }
-        return ResponseEntity.ok(Map.of(
-                "characterId", character.getCharacterId(),
-                "serverId", character.getServerId(),
-                "taechoCount", character.getTaechoCount(),
-                "lastChecked", character.getLastChecked()
-        ));
-    }
-
 
     @GetMapping("/characterDetails")
     public Flux<Map<String, Object>> getCharacterDetailsAsync(
