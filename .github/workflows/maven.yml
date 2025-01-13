@@ -40,11 +40,8 @@ jobs:
         with:
           operation: migrate
           mysql-host: 127.0.0.1
-          mysql-port: 3306
           mysql-user: root
-          mysql-password: root
           mysql-database: testdb
-          mysql-script-folder: ./migrations  # 마이그레이션 스크립트 경로
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
