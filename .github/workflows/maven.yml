@@ -35,14 +35,6 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start MySQL Migration
-        uses: guibranco/github-mysql-migration-action@v0.1.27
-        with:
-          operation: migrate
-          mysql-host: 127.0.0.1
-          mysql-user: root
-          mysql-database: streamer_db
-
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
