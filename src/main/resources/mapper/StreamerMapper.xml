@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.ch.df.mapper.StreamerMapper">
+
     <select id="findByName" parameterType="string" resultType="com.ch.df.domain.Streamer">
         SELECT * FROM streamer WHERE name = #{name}
     </select>

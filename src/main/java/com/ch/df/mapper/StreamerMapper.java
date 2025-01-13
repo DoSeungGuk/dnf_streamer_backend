@@ -7,8 +7,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface StreamerMapper {
 
-    void insertStreamer(Streamer streamer);
-
     Streamer findByName(@Param("name") String name);
+    void insertStreamer(Streamer streamer);
 
 }

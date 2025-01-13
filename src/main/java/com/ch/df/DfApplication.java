@@ -6,7 +6,7 @@ import org.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @MapperScan("com.ch.df.mapper")
-@MapperScan("com.ch.df.dao")
+@MapperScan(basePackages = "com.ch.df.dao")
 public class DfApplication {
 
     public static void main(String[] args) {
