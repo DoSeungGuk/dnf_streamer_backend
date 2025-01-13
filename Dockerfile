@@ -1,5 +1,5 @@
 # 1. Base image 설정
-FROM openjdk:21
+FROM openjdk:17
 
 # 2. 애플리케이션 JAR 파일 복사
 ARG JAR_FILE=out/artifacts/df_jar/df.jar
