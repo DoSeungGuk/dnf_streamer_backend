@@ -27,6 +27,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..10}; do
+            if mysqladmin ping -h "127.0.0.1" --port=3306 --silent; then
+              echo "MySQL is up!"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
