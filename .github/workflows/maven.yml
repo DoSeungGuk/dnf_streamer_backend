@@ -41,14 +41,9 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17.0.13'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
-
-      - name: Set up Maven
-        uses: s4u/setup-maven@v2
-        with:
-          maven-version: '3.8.8'
 
       - name: Build with Maven (Debug)
         run: mvn -B -X -e package --file pom.xml
